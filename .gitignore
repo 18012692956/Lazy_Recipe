@@ -1,0 +1,31 @@
+# ---- Backend (Spring Boot) ----
+target/
+*.iml
+/.idea/
+/.mvn/
+logs/
+application-secret.properties
+src/main/resources/application-secret.properties
+
+# ---- HarmonyOS / DevEco ----
+/.hvigor/
+/build/
+/build-debug/
+/build-release/
+/entry/build/
+/.ets/
+/.DS_Store
+
+# ---- Node / npm ----
+node_modules/
+
+# ---- System files ----
+Thumbs.db
+*.log
+
+# ---- API Keys (千万别提交) ----
+*.key
+*.pem
+secret.txt
+.env
+
