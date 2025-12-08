@@ -22,12 +22,11 @@ public class RecommendService {
      * 推荐菜谱（本地匹配 → AI 兜底）
      */
     public List<Recipe> recommend(RecommendRequest req) {
-
         // ① 本地规则推荐
         List<Recipe> candidates = ruleBasedRecommend(req);
 
         if (!candidates.isEmpty()) {
-            return candidates; // 本地命中直接返回
+            return candidates; // 返回匹配的多个候选
         }
 
         // ② 本地为空 → 调用 AI 生成菜谱
@@ -37,15 +36,15 @@ public class RecommendService {
                 req.getStyle()
         );
 
-        // ③ 存入本地菜谱库（关键步骤）
+        // ③ 存入数据库
         dataService.addRecipe(aiRecipe);
 
-        // ④ 返回 AI 生成的菜谱
+        // ④ 返回 AI 菜谱（包一层 List）
         return List.of(aiRecipe);
     }
 
     /**
-     * 规则匹配推荐（本地列表）
+     * 本地规则匹配
      */
     private List<Recipe> ruleBasedRecommend(RecommendRequest req) {
         List<String> userIngredients = req.getIngredients();
@@ -53,7 +52,7 @@ public class RecommendService {
         return dataService.getRecipes().stream()
                 .filter(recipe -> isIngredientMatched(recipe, userIngredients))
                 .sorted((a, b) -> Integer.compare(score(b, req), score(a, req)))
-                .limit(5)
+                .limit(5) // 最多返回 5 个推荐菜谱
                 .collect(Collectors.toList());
     }
 
@@ -66,7 +65,7 @@ public class RecommendService {
     }
 
     /**
-     * 简单评分算法
+     * 简单评分算法（食材 + 口味 + 菜系）
      */
     private int score(Recipe r, RecommendRequest req) {
         int score = 0;

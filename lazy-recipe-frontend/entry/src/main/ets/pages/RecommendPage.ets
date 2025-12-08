@@ -46,22 +46,25 @@ export struct RecommendPage {
             ListItem() {
               Column() {
                 Text(r.title)
-                  .fontSize(22)
-                  .fontWeight(FontWeight.Bold);
+                  .fontSize(20)
+                  .fontWeight(FontWeight.Bold)
 
-                Text("用料：" + r.ingredients.join("、"))
+                Text(`难度：${r.difficulty}｜耗时：${r.timeMinutes}`)
                   .fontSize(16)
-                  .margin({ top: 6 });
-
-                Text(`口味：${r.taste} ｜ 菜系：${r.style}`)
-                  .fontSize(16)
-                  .margin({ top: 4 });
+                  .margin({ top: 4 })
               }
               .padding(12)
+              .onClick(() => {
+                router.pushUrl({
+                  url: 'pages/DetailPage',
+                  params: r  // 直接传递整个 recipe 对象，或 r.id
+                });
+              })
             }
-          }, (r: Recipe) => r.id.toString()) // ForEach 必须有 key
+          }, (r: Recipe) => r.id.toString())
         }
       }
+
       Button("返回")
         .margin({ bottom: 10 })
         .onClick(() => {
@@ -70,4 +73,5 @@ export struct RecommendPage {
     }
     .padding(20)
   }
+
 }

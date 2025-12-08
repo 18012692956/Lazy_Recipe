@@ -1,36 +1,36 @@
 package com.sky.lazy_recipe_backend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.List;
 
-/**
- * 菜谱类（Recipe）
- *
- * 当前迭代中 ingredients 使用 String 列表，便于前端直接展示。
- * 未来迭代将切换为 Ingredient 列表，以支持数据库、营养标签等扩展。
- */
+@Entity
+@Table(name = "recipes")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Recipe {
-    private int id;                     // 菜谱ID
-    private String title;               // 菜名
-    private List<String> ingredients;   // 当前迭代：使用字符串表示食材
 
-    // TODO Iteration 2:
-    // private List<Ingredient> ingredientList;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;  // 使用 Integer 更符合 JPA 标准
 
-    private String taste;               // 口味（清淡、微辣等）
-    private String style;               // 菜系（家常菜、快手菜等）
-    private int timeMinutes;            // 烹饪时间（分钟）
-    private String difficulty;          // 难度（简单、中等）
+    private String title;
 
-    private List<String> steps;         // 制作步骤
+    @ElementCollection
+    @CollectionTable(name = "recipe_ingredients", joinColumns = @JoinColumn(name = "recipe_id"))
+    @Column(name = "ingredient")
+    private List<String> ingredients;
 
-    // TODO Iteration 3: 添加 thumbnail 图片URL
+    private String taste;
+    private String style;
+    private Integer timeMinutes;
+    private String difficulty;
+
+    @ElementCollection
+    @CollectionTable(name = "recipe_steps", joinColumns = @JoinColumn(name = "recipe_id"))
+    @Column(name = "step")
+    private List<String> steps;
 }

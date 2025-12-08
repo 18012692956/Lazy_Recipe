@@ -3,6 +3,8 @@ package com.sky.lazy_recipe_backend.service;
 import com.sky.lazy_recipe_backend.model.Category;
 import com.sky.lazy_recipe_backend.model.IngredientCategory;
 import com.sky.lazy_recipe_backend.model.Recipe;
+import com.sky.lazy_recipe_backend.repository.RecipeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -10,7 +12,10 @@ import java.util.*;
 @Service
 public class DataService {
 
-    // ---------- 多级食材结构 ----------
+    @Autowired
+    private RecipeRepository recipeRepository;
+
+    // ---------- 多级食材结构（仍内存） ----------
     private static final Map<Category, List<IngredientCategory>> INGREDIENTS = new LinkedHashMap<>();
 
     // ---------- 调料 ----------
@@ -26,13 +31,10 @@ public class DataService {
 
     // ---------- 菜系风格 ----------
     private static final List<String> STYLES = List.of(
-            "家常菜", "川菜", "粤菜", "湘菜", "快手菜", "健康减脂", "东北菜", "西北菜", "本帮菜", "日式料理", "韩式料理"
+            "家常菜", "快手菜", "健康减脂", "川菜", "粤菜", "湘菜", "东北菜", "西北菜", "本帮菜", "日式料理", "韩式料理"
     );
 
-    // ---------- 本地内置菜谱 ----------
-    private static final List<Recipe> RECIPES = new ArrayList<>();
-
-    // ---------- 收藏 ----------
+    // ---------- 收藏（可选：仍为内存） ----------
     private static final List<Recipe> FAVORITES = new ArrayList<>();
 
     static {
@@ -81,9 +83,6 @@ public class DataService {
                 new IngredientCategory("制品", List.of("豆腐", "豆腐皮", "豆腐干", "腐竹", "豆浆"))
         ));
 
-        // 示例菜谱
-        RECIPES.add(new Recipe(1, "西红柿炒鸡蛋", List.of("西红柿", "鸡蛋"), "咸香", "家常菜", 10, "简单", List.of("打蛋", "炒蛋", "炒番茄", "合并翻炒")));
-        RECIPES.add(new Recipe(2, "青椒炒肉丝", List.of("青椒", "猪里脊"), "微辣", "川菜", 15, "简单", List.of("切肉丝", "切青椒", "热锅翻炒")));
     }
 
     public Map<Category, List<IngredientCategory>> getIngredients() {
@@ -102,10 +101,17 @@ public class DataService {
         return STYLES;
     }
 
+    // ✅ 数据库读取菜谱
     public List<Recipe> getRecipes() {
-        return RECIPES;
+        return recipeRepository.findAll();
     }
 
+    // ✅ 添加菜谱到数据库
+    public void addRecipe(Recipe recipe) {
+        recipeRepository.save(recipe);
+    }
+
+    // ✅ 收藏仍在内存（可扩展）
     public List<Recipe> getFavorites() {
         return FAVORITES;
     }
@@ -113,9 +119,5 @@ public class DataService {
     public void addFavorite(Recipe recipe) {
         FAVORITES.add(recipe);
     }
-
-    public void addRecipe(Recipe recipe) {
-        recipe.setId(RECIPES.size() + 1);
-        RECIPES.add(recipe);
-    }
 }
+
