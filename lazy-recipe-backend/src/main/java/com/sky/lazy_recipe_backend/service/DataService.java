@@ -111,13 +111,20 @@ public class DataService {
         recipeRepository.save(recipe);
     }
 
-    // ✅ 收藏仍在内存（可扩展）
     public List<Recipe> getFavorites() {
-        return FAVORITES;
+        return recipeRepository.findAll().stream()
+                .filter(Recipe::isFavorite)
+                .toList();
     }
 
-    public void addFavorite(Recipe recipe) {
-        FAVORITES.add(recipe);
+
+    public void updateFavorite(int recipeId) {
+        Optional<Recipe> optional = recipeRepository.findById(recipeId);
+        optional.ifPresent(recipe -> {
+            recipe.setFavorite(!recipe.isFavorite());
+            recipeRepository.save(recipe);
+        });
     }
+
 }
 

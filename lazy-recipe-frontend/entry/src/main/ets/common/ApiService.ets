@@ -2,7 +2,7 @@ import { HttpClient } from './HttpClient';
 import { IngredientsMap } from '../model/IngredientsMap';
 import { Preferences } from '../model/Preferences';
 import { Recipe } from '../model/Recipe';
-import { RecommendRequest } from '../model/RecommendRequest';
+import { RecommendRequest, FavoriteRequest } from '../model/Request';
 
 export class ApiService {
 
@@ -12,6 +12,12 @@ export class ApiService {
 
   static async getPreferences(): Promise<Preferences> {
     return await HttpClient.get<Preferences>("/preferences");
+  }
+
+  // 收藏切换
+  static async updateFavorite(recipeId: number): Promise<void> {
+    const req: FavoriteRequest = { recipe_id: recipeId };
+    await HttpClient.post<void, FavoriteRequest>(`/favorite`, req);
   }
 
   static async recommend(
@@ -26,6 +32,6 @@ export class ApiService {
       style: style
     };
 
-    return await HttpClient.post<Recipe[]>("/recommend", req);
+    return await HttpClient.post<Recipe[], RecommendRequest>("/recommend", req);
   }
 }

@@ -51,7 +51,7 @@ public class RecommendService {
 
         return dataService.getRecipes().stream()
                 .filter(recipe -> isIngredientMatched(recipe, userIngredients))
-                .sorted((a, b) -> Integer.compare(score(b, req), score(a, req)))
+                .sorted((a, b) -> Double.compare(score(b, req), score(a, req)))
                 .limit(5) // 最多返回 5 个推荐菜谱
                 .collect(Collectors.toList());
     }
@@ -67,16 +67,18 @@ public class RecommendService {
     /**
      * 简单评分算法（食材 + 口味 + 菜系）
      */
-    private int score(Recipe r, RecommendRequest req) {
-        int score = 0;
+    private double score(Recipe r, RecommendRequest req) {
+        double score = 0.0;
 
         long matches = r.getIngredients().stream()
                 .filter(req.getIngredients()::contains)
                 .count();
-        score += matches * 2;
+        score += matches * 2.0;
 
-        if (r.getTaste().equals(req.getTaste())) score += 3;
-        if (r.getStyle().equals(req.getStyle())) score += 3;
+        if (r.getTaste().equals(req.getTaste())) score += 3.0;
+        if (r.getStyle().equals(req.getStyle())) score += 3.0;
+
+        if (r.isFavorite()) score += 0.1;
 
         return score;
     }

@@ -1,6 +1,6 @@
 import { ApiService } from '../common/ApiService';
 import { Recipe } from '../model/Recipe';
-import { RecommendRequest } from '../model/RecommendRequest';
+import { RecommendRequest } from '../model/Request';
 import router from '@ohos.router';
 
 @Entry
@@ -16,13 +16,10 @@ export struct RecommendPage {
   };
 
   aboutToAppear() {
-    // HarmonyOS NEXT 标准方法：获取路由参数
     const params = router.getParams();
-
     if (params) {
       this.navParams = params as RecommendRequest;
     }
-
     this.loadRecipes();
   }
 
@@ -32,6 +29,10 @@ export struct RecommendPage {
       this.navParams.taste,
       this.navParams.style
     );
+  }
+
+  private async toggleFavorite(recipe: Recipe) {
+    await ApiService.updateFavorite(recipe.id); // ⬅️ 添加 API 请求
   }
 
   build() {
@@ -44,22 +45,28 @@ export struct RecommendPage {
         List() {
           ForEach(this.recipes, (r: Recipe) => {
             ListItem() {
-              Column() {
-                Text(r.title)
-                  .fontSize(20)
-                  .fontWeight(FontWeight.Bold)
-
-                Text(`难度：${r.difficulty}｜耗时：${r.timeMinutes}`)
-                  .fontSize(16)
-                  .margin({ top: 4 })
+              Row() {
+                Column() {
+                  Text(r.title)
+                    .fontSize(20)
+                    .fontWeight(FontWeight.Bold)
+                  Text(`难度：${r.difficulty}｜耗时：${r.timeMinutes}`)
+                    .fontSize(16)
+                    .margin({ top: 4 })
+                }
+                .onClick(() => {
+                  router.pushUrl({
+                    url: 'pages/DetailPage',
+                    params: r
+                  });
+                })
+                Blank().layoutWeight(1)
+                Image(r.favorite ? $r("app.media.heart_filled") : $r("app.media.heart_unfilled")) // ❤️ 图标
+                  .width(24)
+                  .height(24)
+                  .onClick(() => this.toggleFavorite(r))
               }
               .padding(12)
-              .onClick(() => {
-                router.pushUrl({
-                  url: 'pages/DetailPage',
-                  params: r  // 直接传递整个 recipe 对象，或 r.id
-                });
-              })
             }
           }, (r: Recipe) => r.id.toString())
         }
@@ -73,5 +80,4 @@ export struct RecommendPage {
     }
     .padding(20)
   }
-
 }

@@ -3,3 +3,7 @@ export interface RecommendRequest {
   taste: string;
   style: string;
 }
+
+export interface FavoriteRequest {
+  recipe_id: number;
+}

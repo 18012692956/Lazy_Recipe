@@ -86,12 +86,12 @@ public class ApiController {
     }
 
     /**
-     * 收藏菜谱
-     * POST /api/favorites
+     * 设置某个菜谱是否收藏
+     * POST /api/recipes/{id}/favorite
      */
-    @PostMapping("/favorites")
-    public String addFavorite(@RequestBody Recipe recipe) {
-        dataService.addFavorite(recipe);
-        return "OK";
+    @PostMapping("/favorite")
+    public void updateFavorite(@RequestBody Map<String, Integer> req) {
+        int recipeId = req.get("recipe_id");
+        dataService.updateFavorite(recipeId);
     }
 }

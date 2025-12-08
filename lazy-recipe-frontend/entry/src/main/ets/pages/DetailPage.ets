@@ -12,7 +12,8 @@ export struct DetailPage {
     style: '',
     difficulty: '',
     timeMinutes: 0,
-    steps: []
+    steps: [],
+    favorite: false
   };
 
   aboutToAppear() {

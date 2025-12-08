@@ -1,8 +1,8 @@
 import http from '@ohos.net.http';
-import { RecommendRequest } from '../model/RecommendRequest';
+import { RecommendRequest } from '../model/Request';
 
 export class HttpClient {
-  static baseUrl: string = "http://10.135.15.156:8080/api";
+  static baseUrl: string = "http://192.168.19.62:8080/api";
 
   static async get<T>(path: string): Promise<T> {
     const client = http.createHttp();
@@ -18,7 +18,7 @@ export class HttpClient {
     return JSON.parse(response.result as string) as T;
   }
 
-  static async post<T>(path: string, body: RecommendRequest): Promise<T> {
+  static async post<T, B>(path: string, body: B): Promise<T> {
     const client = http.createHttp();
     const response = await client.request(
       `${HttpClient.baseUrl}${path}`,

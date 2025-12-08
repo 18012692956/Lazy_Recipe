@@ -7,4 +7,5 @@ export interface Recipe {
   timeMinutes: number;
   difficulty: string;
   steps: string[];
+  favorite: boolean;
 }

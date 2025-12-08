@@ -33,4 +33,10 @@ public class Recipe {
     @CollectionTable(name = "recipe_steps", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "step")
     private List<String> steps;
+
+    // Getter & Setter
+    @Setter
+    @Getter
+    @Column(nullable = false)
+    private boolean favorite = false;
 }
