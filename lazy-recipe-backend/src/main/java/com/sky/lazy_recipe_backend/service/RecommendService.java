@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class RecommendService {
 
     private final DataService dataService;
-    private final AIService aiService;   // ★ 新增：AI 服务
+    private final AIService aiService;
 
     public RecommendService(DataService dataService, AIService aiService) {
         this.dataService = dataService;
@@ -19,28 +19,33 @@ public class RecommendService {
     }
 
     /**
-     * 获取推荐菜谱
-     * 1) 规则匹配
-     * 2) 不足时调用 AI 自动补全
+     * 推荐菜谱（本地匹配 → AI 兜底）
      */
     public List<Recipe> recommend(RecommendRequest req) {
-        List<Recipe> baseCandidates = ruleBasedRecommend(req);
 
-        // ========= AI 兜底增强 =========
-        if (baseCandidates.size() < 2) {
-            Recipe aiRecipe = aiService.generateRecipe(
-                    req.getIngredients(),
-                    req.getTaste(),
-                    req.getStyle()
-            );
-            baseCandidates.add(aiRecipe);
+        // ① 本地规则推荐
+        List<Recipe> candidates = ruleBasedRecommend(req);
+
+        if (!candidates.isEmpty()) {
+            return candidates; // 本地命中直接返回
         }
 
-        return baseCandidates;
+        // ② 本地为空 → 调用 AI 生成菜谱
+        Recipe aiRecipe = aiService.generateRecipe(
+                req.getIngredients(),
+                req.getTaste(),
+                req.getStyle()
+        );
+
+        // ③ 存入本地菜谱库（关键步骤）
+        dataService.addRecipe(aiRecipe);
+
+        // ④ 返回 AI 生成的菜谱
+        return List.of(aiRecipe);
     }
 
     /**
-     * 规则匹配推荐
+     * 规则匹配推荐（本地列表）
      */
     private List<Recipe> ruleBasedRecommend(RecommendRequest req) {
         List<String> userIngredients = req.getIngredients();
@@ -53,7 +58,7 @@ public class RecommendService {
     }
 
     /**
-     * 至少一个匹配食材
+     * 至少一个食材匹配
      */
     private boolean isIngredientMatched(Recipe recipe, List<String> userIngredients) {
         return recipe.getIngredients().stream()
@@ -61,7 +66,7 @@ public class RecommendService {
     }
 
     /**
-     * 推荐评分
+     * 简单评分算法
      */
     private int score(Recipe r, RecommendRequest req) {
         int score = 0;

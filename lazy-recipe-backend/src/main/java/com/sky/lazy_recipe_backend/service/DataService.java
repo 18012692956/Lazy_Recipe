@@ -94,4 +94,10 @@ public class DataService {
     public void addFavorite(Recipe recipe) {
         FAVORITES.add(recipe);
     }
+
+    /** ⭐ 新增：将 AI 生成的新菜加入本地 */
+    public void addRecipe(Recipe recipe) {
+        recipe.setId(RECIPES.size() + 1);
+        RECIPES.add(recipe);
+    }
 }
