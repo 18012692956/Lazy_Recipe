@@ -1,5 +1,7 @@
 package com.sky.lazy_recipe_backend.controller;
 
+import com.sky.lazy_recipe_backend.model.Category;
+import com.sky.lazy_recipe_backend.model.IngredientCategory;
 import com.sky.lazy_recipe_backend.model.Recipe;
 import com.sky.lazy_recipe_backend.model.RecommendRequest;
 import com.sky.lazy_recipe_backend.service.DataService;
@@ -12,8 +14,9 @@ import java.util.*;
  * API 控制层
  *
  * 当前迭代提供以下功能：
- *  - 获取食材列表
+ *  - 获取食材列表（多级结构）
  *  - 获取口味与菜系选项
+ *  - 获取调料列表
  *  - 根据用户选择食材推荐菜谱（伪AI版本）
  *  - 收藏菜谱 & 查看收藏
  *
@@ -34,12 +37,22 @@ public class ApiController {
     }
 
     /**
-     * 获取所有可选食材（按分类）
+     * 获取所有可选食材（多级结构）
      * GET /api/ingredients
      */
     @GetMapping("/ingredients")
-    public Map<String, List<String>> getIngredients() {
+    public Map<Category, List<IngredientCategory>> getIngredients() {
         return dataService.getIngredients();
+    }
+
+
+    /**
+     * 获取调料列表（独立分类）
+     * GET /api/seasonings
+     */
+    @GetMapping("/seasonings")
+    public List<String> getSeasonings() {
+        return dataService.getSeasonings();
     }
 
     /**

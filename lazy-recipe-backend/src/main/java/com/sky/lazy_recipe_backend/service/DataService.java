@@ -1,77 +1,97 @@
 package com.sky.lazy_recipe_backend.service;
 
+import com.sky.lazy_recipe_backend.model.Category;
+import com.sky.lazy_recipe_backend.model.IngredientCategory;
 import com.sky.lazy_recipe_backend.model.Recipe;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-/**
- * 数据服务层
- * 当前迭代使用内存结构模拟数据库，便于快速开发。
- *
- * TODO Iteration 2:
- *   - 将数据迁移到数据库（MySQL / MongoDB）
- *   - Ingredient 替换为数据库实体
- */
 @Service
 public class DataService {
 
-    // ---------- 食材（按分类） ----------
-    private static final Map<String, List<String>> INGREDIENTS = new HashMap<>();
+    // ---------- 多级食材结构 ----------
+    private static final Map<Category, List<IngredientCategory>> INGREDIENTS = new LinkedHashMap<>();
+
+    // ---------- 调料 ----------
+    private static final List<String> SEASONINGS = List.of(
+            "食盐", "酱油", "食醋", "料酒", "蚝油", "番茄酱",
+            "胡椒粉", "辣椒粉", "五香粉", "花椒", "八角", "鸡精", "味精"
+    );
 
     // ---------- 用户口味选项 ----------
     private static final List<String> TASTES = List.of(
-            "清淡", "咸香", "微辣", "重辣", "酸甜"
+            "清淡", "咸香", "微辣", "重辣", "酸甜", "香辣", "麻辣", "鲜香"
     );
 
     // ---------- 菜系风格 ----------
     private static final List<String> STYLES = List.of(
-            "家常菜", "川菜", "粤菜", "快手菜", "健康减脂"
+            "家常菜", "川菜", "粤菜", "湘菜", "快手菜", "健康减脂", "东北菜", "西北菜", "本帮菜", "日式料理", "韩式料理"
     );
 
-    // ---------- 本地内置菜谱（伪数据库） ----------
+    // ---------- 本地内置菜谱 ----------
     private static final List<Recipe> RECIPES = new ArrayList<>();
 
-    // ---------- 收藏记录 ----------
+    // ---------- 收藏 ----------
     private static final List<Recipe> FAVORITES = new ArrayList<>();
 
-
-    // 静态初始化（模拟数据库）
     static {
-        INGREDIENTS.put("meat", List.of("鸡胸肉", "牛肉", "猪肉", "虾仁"));
-        INGREDIENTS.put("vegetables", List.of("西红柿", "土豆", "青椒", "胡萝卜", "西兰花"));
-        INGREDIENTS.put("staple", List.of("鸡蛋", "豆腐", "米饭", "面条"));
+        // 主食
+        INGREDIENTS.put(Category.STAPLE, List.of(
+                new IngredientCategory("米类", List.of("大米", "糯米", "黑米", "小米")),
+                new IngredientCategory("面类", List.of("面条", "面粉", "意面", "馒头", "饺子皮")),
+                new IngredientCategory("杂粮", List.of("玉米粒", "燕麦", "荞麦", "红豆", "绿豆"))
+        ));
 
-        // -------------------- 第1个菜谱 --------------------
-        Recipe r1 = new Recipe();
-        r1.setId(1);
-        r1.setTitle("西红柿炒鸡蛋");
-        r1.setIngredients(List.of("西红柿", "鸡蛋"));
-        r1.setTaste("咸香");
-        r1.setStyle("家常菜");
-        r1.setTimeMinutes(10);
-        r1.setDifficulty("简单");
-        r1.setSteps(List.of("打蛋", "炒蛋", "炒番茄", "合并翻炒"));
-        RECIPES.add(r1);
+        // 蔬菜
+        INGREDIENTS.put(Category.VEGETABLE, List.of(
+                new IngredientCategory("叶菜类", List.of("菠菜", "油麦菜", "生菜", "小白菜")),
+                new IngredientCategory("根茎类", List.of("土豆", "胡萝卜", "山药", "莲藕")),
+                new IngredientCategory("茄瓜类", List.of("茄子", "黄瓜", "西红柿", "苦瓜", "冬瓜", "南瓜")),
+                new IngredientCategory("葱姜蒜类", List.of("大葱", "洋葱", "大蒜", "生姜", "小米椒")),
+                new IngredientCategory("豆类蔬菜", List.of("四季豆", "毛豆", "豌豆")),
+                new IngredientCategory("菌菇类", List.of("香菇", "金针菇", "平菇", "木耳", "杏鲍菇"))
+        ));
 
-        // -------------------- 第2个菜谱 --------------------
-        Recipe r2 = new Recipe();
-        r2.setId(2);
-        r2.setTitle("青椒炒肉丝");
-        r2.setIngredients(List.of("青椒", "猪肉"));
-        r2.setTaste("微辣");
-        r2.setStyle("川菜");
-        r2.setTimeMinutes(15);
-        r2.setDifficulty("简单");
-        r2.setSteps(List.of("切肉丝", "切青椒", "热锅翻炒"));
-        RECIPES.add(r2);
+        // 肉类
+        INGREDIENTS.put(Category.MEAT, List.of(
+                new IngredientCategory("猪肉", List.of("五花肉", "猪里脊", "猪排骨", "猪蹄", "猪肚", "猪血")),
+                new IngredientCategory("牛肉", List.of("牛腩", "牛里脊", "牛肋条", "牛腱子", "肥牛片")),
+                new IngredientCategory("羊肉", List.of("羊排", "羊腿", "羊肉片", "羊蝎子")),
+                new IngredientCategory("鸡肉", List.of("鸡胸肉", "鸡腿", "鸡翅", "鸡肝", "整鸡")),
+                new IngredientCategory("鸭肉", List.of("鸭腿", "鸭胸", "鸭掌", "鸭血"))
+        ));
+
+        // 水产
+        INGREDIENTS.put(Category.SEAFOOD, List.of(
+                new IngredientCategory("鱼类", List.of("鲈鱼", "草鱼", "鲫鱼", "三文鱼", "鳕鱼")),
+                new IngredientCategory("虾蟹贝", List.of("基围虾", "龙虾", "螃蟹", "蛤蜊", "花甲", "扇贝")),
+                new IngredientCategory("其他", List.of("海带", "紫菜", "鱿鱼", "章鱼"))
+        ));
+
+        // 蛋奶
+        INGREDIENTS.put(Category.EGG_DAIRY, List.of(
+                new IngredientCategory("蛋类", List.of("鸡蛋", "鸭蛋", "鹌鹑蛋")),
+                new IngredientCategory("乳类", List.of("牛奶", "酸奶", "奶酪", "黄油"))
+        ));
+
+        // 豆制品
+        INGREDIENTS.put(Category.BEAN_PRODUCT, List.of(
+                new IngredientCategory("豆类", List.of("黄豆", "绿豆", "黑豆", "红豆")),
+                new IngredientCategory("制品", List.of("豆腐", "豆腐皮", "豆腐干", "腐竹", "豆浆"))
+        ));
+
+        // 示例菜谱
+        RECIPES.add(new Recipe(1, "西红柿炒鸡蛋", List.of("西红柿", "鸡蛋"), "咸香", "家常菜", 10, "简单", List.of("打蛋", "炒蛋", "炒番茄", "合并翻炒")));
+        RECIPES.add(new Recipe(2, "青椒炒肉丝", List.of("青椒", "猪里脊"), "微辣", "川菜", 15, "简单", List.of("切肉丝", "切青椒", "热锅翻炒")));
     }
 
-
-    // -------------------- 对外提供数据访问 API --------------------
-
-    public Map<String, List<String>> getIngredients() {
+    public Map<Category, List<IngredientCategory>> getIngredients() {
         return INGREDIENTS;
+    }
+
+    public List<String> getSeasonings() {
+        return SEASONINGS;
     }
 
     public List<String> getTastes() {
@@ -86,7 +106,6 @@ public class DataService {
         return RECIPES;
     }
 
-    // 收藏管理
     public List<Recipe> getFavorites() {
         return FAVORITES;
     }
@@ -95,7 +114,6 @@ public class DataService {
         FAVORITES.add(recipe);
     }
 
-    /** ⭐ 新增：将 AI 生成的新菜加入本地 */
     public void addRecipe(Recipe recipe) {
         recipe.setId(RECIPES.size() + 1);
         RECIPES.add(recipe);

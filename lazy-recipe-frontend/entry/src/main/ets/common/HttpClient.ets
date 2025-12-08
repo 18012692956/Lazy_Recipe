@@ -2,7 +2,7 @@ import http from '@ohos.net.http';
 import { RecommendRequest } from '../model/RecommendRequest';
 
 export class HttpClient {
-  static baseUrl: string = "http://10.130.120.137:8080/api";
+  static baseUrl: string = "http://10.135.15.156:8080/api";
 
   static async get<T>(path: string): Promise<T> {
     const client = http.createHttp();
