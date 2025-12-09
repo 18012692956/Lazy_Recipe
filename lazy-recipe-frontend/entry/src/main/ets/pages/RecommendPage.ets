@@ -89,6 +89,13 @@ export struct RecommendPage {
     }
   }
 
+  private navigateToDetail(recipe: Recipe) {
+    router.pushUrl({
+      url: 'pages/DetailPage',
+      params: recipe
+    })
+  }
+
   @Builder
   buildRecipeCard(r: Recipe) {
     Column() {
@@ -141,16 +148,11 @@ export struct RecommendPage {
         }
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
-        .onClick(() => {
-          router.pushUrl({
-            url: 'pages/DetailPage',
-            params: r
-          });
-        })
+        .onClick(() => this.navigateToDetail(r))
 
         Column() {
           Text(r.favorite ? "❤️" : "🤍")
-            .fontSize(32)
+            .fontSize(24)
           Text(r.favorite ? "已收藏" : "收藏")
             .fontSize(13)
             .margin({ top: 4 })

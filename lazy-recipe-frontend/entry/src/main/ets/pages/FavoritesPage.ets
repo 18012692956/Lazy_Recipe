@@ -48,6 +48,7 @@ export struct FavoritesPage {
       url: 'pages/DetailPage',
       params: recipe
     })
+    this.isLoading = false;
   }
 
   @Builder
@@ -104,8 +105,8 @@ export struct FavoritesPage {
         // ✅ 收藏页面显示取消收藏按钮
         Column() {
           Text("❤️")
-            .fontSize(32)
-          Text("取消")
+            .fontSize(24)
+          Text("已收藏")
             .fontSize(13)
             .margin({ top: 4 })
             .fontColor('#FF6B6B')

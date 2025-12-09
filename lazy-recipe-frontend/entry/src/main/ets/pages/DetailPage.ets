@@ -32,8 +32,8 @@ export struct DetailPage {
     const params = router.getParams();
     if (params) {
       this.recipe = params as Recipe;
-      // ✅ 记录浏览历史
-      this.recordViewHistory();
+
+      this.recordViewHistory()
     }
   }
 
