@@ -14,6 +14,10 @@ export class ApiService {
     return await HttpClient.get<Preferences>("/preferences");
   }
 
+  static async getFavorites(): Promise<Recipe[]> {
+    return await HttpClient.get<Recipe[]>("/favorites");
+  }
+
   // 收藏切换
   static async updateFavorite(recipeId: number): Promise<void> {
     const req: FavoriteRequest = { recipe_id: recipeId };

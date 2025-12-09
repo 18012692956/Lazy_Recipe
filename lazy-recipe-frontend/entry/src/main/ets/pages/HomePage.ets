@@ -6,6 +6,8 @@ import router from '@ohos.router';
 @Entry
 @Component
 export struct HomePage {
+  @State currentTab: number = 0;
+
   @State categoryList: IngredientCategory[] = [];
   @State tastes: string[] = [];
   @State styles: string[] = [];
@@ -25,6 +27,69 @@ export struct HomePage {
     'EGG_DAIRY': '🥚 蛋奶',
     'BEAN_PRODUCT': '🫘 豆制品'
   };
+
+  private subCategoryDisplay: Record<string, string> = {
+    // 主食
+    "米类": "🍚 米类",
+    "面类": "🍜 面类",
+    "杂粮": "🌾 杂粮",
+
+    // 蔬菜
+    "叶菜类": "🥬 叶菜类",
+    "根茎类": "🥕 根茎类",
+    "茄瓜类": "🍆 茄瓜类",
+    "葱姜蒜类": "🧄 葱姜蒜类",
+    "豆类蔬菜": "🫘 豆类蔬菜",
+    "菌菇类": "🍄 菌菇类",
+
+    // 肉类
+    "猪肉": "🐖 猪肉",
+    "牛肉": "🐄 牛肉",
+    "羊肉": "🐏 羊肉",
+    "鸡肉": "🐔 鸡肉",
+    "鸭肉": "🦆 鸭肉",
+
+    // 水产
+    "鱼类": "🐟 鱼类",
+    "虾蟹贝": "🦐 虾蟹贝",
+    "其他": "🌊 其他",
+
+    // 蛋奶
+    "蛋类": "🥚 蛋类",
+    "乳类": "🥛 乳类",
+
+    // 豆制品
+    "豆类": "🌰 豆类",
+    "制品": "🧈 制品"
+  };
+
+
+  private tasteDisplay: Record<string, string> = {
+    "清淡": "🥗 清淡",
+    "咸香": "🧂 咸香",
+    "微辣": "🌶️ 微辣",
+    "重辣": "🔥 重辣",
+    "酸甜": "🍬 酸甜",
+    "香辣": "🫚🌶️ 香辣",
+    "麻辣": "🫑🌶️ 麻辣",
+    "鲜香": "🍲 鲜香"
+  };
+
+
+  private styleDisplay: Record<string, string> = {
+    "家常菜": "🏡 家常菜",
+    "快手菜": "⚡ 快手菜",
+    "健康减脂": "🥦 健康减脂",
+    "川菜": "🌶️ 川菜",
+    "粤菜": "🍛 粤菜",
+    "湘菜": "🌶️ 湘菜",
+    "东北菜": "❄️ 东北菜",
+    "西北菜": "🦴 西北菜",
+    "本帮菜": "🍜 本帮菜",
+    "日式料理": "🍱 日式料理",
+    "韩式料理": "🍲 韩式料理"
+  };
+
 
   async aboutToAppear() {
     const rawMap: IngredientsMap = await ApiService.getIngredients();
@@ -131,7 +196,7 @@ export struct HomePage {
                           .fontColor('#999999')
                           .margin({ right: 8 })
 
-                        Text(subcat.subcategory)
+                        Text(this.subCategoryDisplay[subcat.subcategory] ?? subcat.subcategory)
                           .fontSize(16)
                           .fontColor('#666666')
                       }
@@ -183,6 +248,28 @@ export struct HomePage {
             .width('100%')
           })
 
+          // 显示已选食材
+          if (this.selectedIngredients.length > 0) {
+            Text('🧺 已选食材')
+              .fontSize(18)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#333333')
+              .margin({ top: 16, bottom: 8 })
+
+            Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
+              ForEach(this.selectedIngredients, (item: string) => {
+                Text(item)
+                  .fontSize(15)
+                  .fontColor('#555555')
+                  .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+                  .backgroundColor('#EFEFEF')
+                  .borderRadius(16)
+                  .margin({ right: 8, bottom: 8 })
+              })
+            }
+          }
+
+
           // 口味选择（已改为 Flex）
           Text('🌶️ 选择口味')
             .fontSize(20)
@@ -193,7 +280,7 @@ export struct HomePage {
 
           Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
             ForEach(this.tastes, (t: string) => {
-              Text(t)
+              Text(this.tasteDisplay[t] ?? t)
                 .fontSize(16)
                 .fontColor(this.selectedTaste === t ? '#FFFFFF' : '#666666')
                 .padding({ left: 20, right: 20, top: 10, bottom: 10 })
@@ -218,7 +305,7 @@ export struct HomePage {
 
           Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
             ForEach(this.styles, (s: string) => {
-              Text(s)
+              Text(this.styleDisplay[s] ?? s)
                 .fontSize(16)
                 .fontColor(this.selectedStyle === s ? '#FFFFFF' : '#666666')
                 .padding({ left: 20, right: 20, top: 10, bottom: 10 })
@@ -258,6 +345,54 @@ export struct HomePage {
       }
       .layoutWeight(1)
       .scrollBar(BarState.Auto)
+
+      // 底部导航栏
+      Row() {
+        // 首页
+        Column() {
+          Text('⭕')
+            .fontSize(24)
+          Text('首页')
+            .fontSize(12)
+        }
+        .alignItems(HorizontalAlign.Center)
+        .layoutWeight(1)
+        .onClick(() => {
+          this.currentTab = 0
+        })
+
+        // 收藏夹
+        Column() {
+          Text('❤️')
+            .fontSize(24)
+          Text('收藏')
+            .fontSize(12)
+        }
+        .alignItems(HorizontalAlign.Center)
+        .layoutWeight(1)
+        .onClick(() => {
+          this.currentTab = 1
+          router.pushUrl({ url: 'pages/FavoritesPage' })
+        })
+
+        // 历史记录
+        Column() {
+          Text('🕒')
+            .fontSize(24)
+          Text('历史')
+            .fontSize(12)
+        }
+        .alignItems(HorizontalAlign.Center)
+        .layoutWeight(1)
+        .onClick(() => {
+          this.currentTab = 2
+          router.pushUrl({ url: 'pages/HistoryPage' })
+        })
+      }
+      .width('100%')
+      .height(60)
+      .backgroundColor('#FFFFFF')
+      .shadow({ radius: 8, color: '#08000000', offsetY: -2 })
     }
     .width('100%')
     .height('100%')

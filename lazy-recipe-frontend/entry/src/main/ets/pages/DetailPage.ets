@@ -77,7 +77,7 @@ export struct DetailPage {
             Row() {
               if (this.recipe.taste && this.recipe.taste !== '') {
                 Row() {
-                  Text('🌶️')
+                  Text('😋')
                     .fontSize(16)
                   Text(this.recipe.taste)
                     .fontSize(14)

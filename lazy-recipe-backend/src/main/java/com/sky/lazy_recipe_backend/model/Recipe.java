@@ -1,8 +1,10 @@
 package com.sky.lazy_recipe_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -39,4 +41,8 @@ public class Recipe {
     @Getter
     @Column(nullable = false)
     private boolean favorite = false;
+
+//    @Column(name = "last_viewed_at", columnDefinition = "DATETIME DEFAULT NULL")
+//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    private LocalDateTime lastViewedAt = null;
 }

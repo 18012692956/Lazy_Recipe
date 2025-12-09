@@ -2,6 +2,8 @@
   "src": [
     "pages/HomePage",
     "pages/RecommendPage",
-    "pages/DetailPage"
+    "pages/DetailPage",
+    "pages/FavoritesPage",
+    "pages/HistoryPage"
   ]
 }

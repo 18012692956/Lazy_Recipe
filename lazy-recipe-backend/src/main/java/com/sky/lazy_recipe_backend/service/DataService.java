@@ -31,11 +31,9 @@ public class DataService {
 
     // ---------- 菜系风格 ----------
     private static final List<String> STYLES = List.of(
-            "家常菜", "快手菜", "健康减脂", "川菜", "粤菜", "湘菜", "东北菜", "西北菜", "本帮菜", "日式料理", "韩式料理"
+            "家常菜", "快手菜", "健康减脂", "川菜", "粤菜", "湘菜", "东北菜", "西北菜",
+            "本帮菜", "日式料理", "韩式料理"
     );
-
-    // ---------- 收藏（可选：仍为内存） ----------
-    private static final List<Recipe> FAVORITES = new ArrayList<>();
 
     static {
         // 主食
@@ -82,8 +80,8 @@ public class DataService {
                 new IngredientCategory("豆类", List.of("黄豆", "绿豆", "黑豆", "红豆")),
                 new IngredientCategory("制品", List.of("豆腐", "豆腐皮", "豆腐干", "腐竹", "豆浆"))
         ));
-
     }
+
 
     public Map<Category, List<IngredientCategory>> getIngredients() {
         return INGREDIENTS;

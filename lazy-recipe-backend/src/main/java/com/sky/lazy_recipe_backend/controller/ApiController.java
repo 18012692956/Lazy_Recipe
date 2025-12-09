@@ -87,7 +87,7 @@ public class ApiController {
 
     /**
      * 设置某个菜谱是否收藏
-     * POST /api/recipes/{id}/favorite
+     * POST /api/favorite
      */
     @PostMapping("/favorite")
     public void updateFavorite(@RequestBody Map<String, Integer> req) {
