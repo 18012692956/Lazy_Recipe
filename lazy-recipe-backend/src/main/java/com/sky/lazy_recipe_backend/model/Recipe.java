@@ -42,7 +42,9 @@ public class Recipe {
     @Column(nullable = false)
     private boolean favorite = false;
 
-//    @Column(name = "last_viewed_at", columnDefinition = "DATETIME DEFAULT NULL")
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-//    private LocalDateTime lastViewedAt = null;
+    @Setter
+    @Getter
+    @Column(name = "last_viewed_at", columnDefinition = "DATETIME DEFAULT NULL")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastViewedAt = null;
 }

@@ -8,4 +8,5 @@ export interface Recipe {
   difficulty: string;
   steps: string[];
   favorite: boolean;
+  lastViewedAt?: string; // ✅ 添加浏览时间（可选）
 }

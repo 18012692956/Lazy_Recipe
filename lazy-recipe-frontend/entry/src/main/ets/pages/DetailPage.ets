@@ -1,5 +1,6 @@
 import { Recipe } from '../model/Recipe';
 import router from '@ohos.router';
+import { ApiService } from '../common/ApiService';
 
 @Entry
 @Component
@@ -13,13 +14,26 @@ export struct DetailPage {
     difficulty: '',
     timeMinutes: 0,
     steps: [],
-    favorite: false
+    favorite: false,
+    lastViewedAt: ""
   };
+
+  // ✅ 记录浏览历史
+  private async recordViewHistory() {
+    try {
+      await ApiService.updateViewHistory(this.recipe.id);
+      console.log('浏览记录已更新');
+    } catch (error) {
+      console.error('记录浏览历史失败:', error);
+    }
+  }
 
   aboutToAppear() {
     const params = router.getParams();
     if (params) {
       this.recipe = params as Recipe;
+      // ✅ 记录浏览历史
+      this.recordViewHistory();
     }
   }
 

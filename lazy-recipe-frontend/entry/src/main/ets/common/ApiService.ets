@@ -2,7 +2,7 @@ import { HttpClient } from './HttpClient';
 import { IngredientsMap } from '../model/IngredientsMap';
 import { Preferences } from '../model/Preferences';
 import { Recipe } from '../model/Recipe';
-import { RecommendRequest, FavoriteRequest } from '../model/Request';
+import { RecommendRequest, DefaultRequest } from '../model/Request';
 
 export class ApiService {
 
@@ -18,10 +18,21 @@ export class ApiService {
     return await HttpClient.get<Recipe[]>("/favorites");
   }
 
+  // ✅ 获取浏览历史
+  static async getHistory(): Promise<Recipe[]> {
+    return await HttpClient.get<Recipe[]>("/history");
+  }
+
   // 收藏切换
   static async updateFavorite(recipeId: number): Promise<void> {
-    const req: FavoriteRequest = { recipe_id: recipeId };
-    await HttpClient.post<void, FavoriteRequest>(`/favorite`, req);
+    const req: DefaultRequest = { recipe_id: recipeId };
+    await HttpClient.post<void, DefaultRequest>(`/recipes/${recipeId}/favorite`, req);
+  }
+
+  // ✅ 更新浏览记录
+  static async updateViewHistory(recipeId: number): Promise<void> {
+    const req: DefaultRequest = { recipe_id: recipeId };
+    await HttpClient.post<void, DefaultRequest>(`/recipes/${recipeId}/view`, req);
   }
 
   static async recommend(

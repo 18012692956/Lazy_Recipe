@@ -4,9 +4,11 @@ import com.sky.lazy_recipe_backend.model.Category;
 import com.sky.lazy_recipe_backend.model.IngredientCategory;
 import com.sky.lazy_recipe_backend.model.Recipe;
 import com.sky.lazy_recipe_backend.repository.RecipeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -122,6 +124,28 @@ public class DataService {
             recipe.setFavorite(!recipe.isFavorite());
             recipeRepository.save(recipe);
         });
+    }
+
+    /**
+     * ✅ 更新浏览历史
+     */
+    @Transactional
+    public void updateViewHistory(Integer recipeId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("菜谱不存在"));
+
+        recipe.setLastViewedAt(LocalDateTime.now());
+        recipeRepository.save(recipe);
+    }
+
+    /**
+     * ✅ 获取浏览历史（最近30天，按时间倒序，最多50条）
+     */
+    public List<Recipe> getHistory() {
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        return recipeRepository.findByLastViewedAtAfterOrderByLastViewedAtDesc(
+                thirtyDaysAgo
+        );
     }
 
 }

@@ -24,7 +24,7 @@ public class RecommendService {
         List<Recipe> localMatches = ruleBasedRecommend(req);
 
         // 高于 AI 标准分的本地候选
-        final double AI_SCORE_STANDARD = 4.5;
+        final double AI_SCORE_STANDARD = 6.0;
         List<Recipe> strongLocals = localMatches.stream()
                 .filter(r -> score(r, req) >= AI_SCORE_STANDARD)
                 .collect(Collectors.toList());

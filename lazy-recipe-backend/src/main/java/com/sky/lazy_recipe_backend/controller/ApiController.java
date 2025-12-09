@@ -89,9 +89,24 @@ public class ApiController {
      * 设置某个菜谱是否收藏
      * POST /api/favorite
      */
-    @PostMapping("/favorite")
-    public void updateFavorite(@RequestBody Map<String, Integer> req) {
-        int recipeId = req.get("recipe_id");
-        dataService.updateFavorite(recipeId);
+    @PostMapping("/recipes/{id}/favorite")
+    public void updateFavorite(@PathVariable Integer id) {
+        dataService.updateFavorite(id);
+    }
+
+    /**
+     * ✅ 更新浏览记录
+     */
+    @PostMapping("/recipes/{id}/view")
+    public void updateViewHistory(@PathVariable Integer id) {
+        dataService.updateViewHistory(id);
+    }
+
+    /**
+     * ✅ 获取浏览历史（按时间倒序）
+     */
+    @GetMapping("/history")
+    public List<Recipe> getHistory() {
+        return dataService.getHistory();
     }
 }

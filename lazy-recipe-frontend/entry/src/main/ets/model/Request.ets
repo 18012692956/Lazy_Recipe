@@ -4,6 +4,6 @@ export interface RecommendRequest {
   style: string;
 }
 
-export interface FavoriteRequest {
+export interface DefaultRequest {
   recipe_id: number;
 }
