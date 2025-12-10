@@ -148,5 +148,13 @@ public class DataService {
         );
     }
 
+    /**
+     * ✅ 清空浏览历史（将所有菜谱的 lastViewedAt 设为 null）
+     */
+    @Transactional
+    public void clearHistory() {
+        recipeRepository.clearAllViewHistory();
+    }
+
 }
 

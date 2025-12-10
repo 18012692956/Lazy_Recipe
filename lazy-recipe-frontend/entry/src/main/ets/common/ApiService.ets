@@ -25,14 +25,20 @@ export class ApiService {
 
   // 收藏切换
   static async updateFavorite(recipeId: number): Promise<void> {
-    const req: DefaultRequest = { recipe_id: recipeId };
+    const req: DefaultRequest = { request: "" };
     await HttpClient.post<void, DefaultRequest>(`/recipes/${recipeId}/favorite`, req);
   }
 
   // ✅ 更新浏览记录
   static async updateViewHistory(recipeId: number): Promise<void> {
-    const req: DefaultRequest = { recipe_id: recipeId };
+    const req: DefaultRequest = { request: "" };
     await HttpClient.post<void, DefaultRequest>(`/recipes/${recipeId}/view`, req);
+  }
+
+  // ✅ 清空浏览历史
+  static async clearHistory(): Promise<void> {
+    const req: DefaultRequest = { request: "" };
+    await HttpClient.post<void, DefaultRequest>("/history/clear", req);
   }
 
   static async recommend(

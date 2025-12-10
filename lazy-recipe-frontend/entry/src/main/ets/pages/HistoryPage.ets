@@ -1,6 +1,7 @@
 import { Recipe } from '../model/Recipe'
 import { ApiService } from '../common/ApiService'
 import router from '@ohos.router'
+import promptAction from '@ohos.promptAction'
 
 @Entry
 @Component
@@ -75,12 +76,70 @@ export struct HistoryPage {
     }
   }
 
+  // ✅ 清空历史记录
+  private async clearAllHistory() {
+    if (this.recipes.length === 0) {
+      promptAction.showToast({
+        message: '历史记录已经是空的了',
+        duration: 2000
+      });
+      return;
+    }
+
+    // 显示确认对话框
+    AlertDialog.show({
+      title: '清空历史记录',
+      message: `确定要清空所有 ${this.recipes.length} 条浏览记录吗？此操作不可恢复。`,
+      primaryButton: {
+        value: '取消',
+        action: () => {
+          console.log('取消清空');
+        }
+      },
+      secondaryButton: {
+        value: '确定清空',
+        fontColor: '#4ECDC4',
+        action: async () => {
+          await this.performClearAll();
+        }
+      }
+    });
+  }
+
+  // 执行清空操作
+  private async performClearAll() {
+    const backupRecipes = [...this.recipes];
+
+    try {
+      // 乐观更新：立即清空列表
+      this.recipes = [];
+
+      // 调用后端 API 清空历史
+      await ApiService.clearHistory();
+
+      promptAction.showToast({
+        message: '已清空历史记录',
+        duration: 2000
+      });
+
+    } catch (error) {
+      console.error('清空历史失败:', error);
+
+      // 失败时恢复
+      this.recipes = backupRecipes;
+
+      promptAction.showToast({
+        message: '清空失败，请重试',
+        duration: 2000
+      });
+    }
+  }
+
   private navigateToDetail(recipe: Recipe) {
     router.pushUrl({
       url: 'pages/DetailPage',
       params: recipe
     })
-    this.isLoading = false;
   }
 
   private formatTime(dateStr: string): string {
@@ -156,7 +215,7 @@ export struct HistoryPage {
                 .margin({ left: 6 })
             }
 
-            // ✅ 显示浏览时间
+            // 显示浏览时间
             if (r.lastViewedAt) {
               Text(`🕐 ${this.formatTime(r.lastViewedAt)}`)
                 .fontSize(12)
@@ -220,7 +279,21 @@ export struct HistoryPage {
 
         Blank()
 
-        Row().width(60)
+        // ✅ 清空按钮
+        Row() {
+          Text('🗑️')
+            .fontSize(20)
+          Text('清空')
+            .fontSize(14)
+            .fontColor('#999999')
+            .margin({ left: 4 })
+        }
+        .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+        .backgroundColor(this.recipes.length > 0 ? '#E5F9F7' : '#F5F5F5')
+        .borderRadius(16)
+        .onClick(() => {
+          this.clearAllHistory();
+        })
       }
       .width('100%')
       .height(56)
@@ -289,7 +362,7 @@ export struct HistoryPage {
           }
           .layoutWeight(1)
           .scrollBar(BarState.Auto)
-          .align(Alignment.Top) // ✅ 从顶部对齐
+          .align(Alignment.Top)
         }
         .layoutWeight(1)
       }

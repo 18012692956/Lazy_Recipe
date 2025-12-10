@@ -1,6 +1,7 @@
 import { Recipe } from '../model/Recipe'
 import { ApiService } from '../common/ApiService'
 import router from '@ohos.router'
+import promptAction from '@ohos.promptAction'
 
 @Entry
 @Component
@@ -29,7 +30,7 @@ export struct FavoritesPage {
     if (!currentRecipe) return;
 
     try {
-      // ✅ 乐观更新：直接从列表中移除
+      // 乐观更新：直接从列表中移除
       this.recipes = this.recipes.filter(r => r.id !== recipeId);
 
       // 调用后端 API
@@ -38,8 +39,68 @@ export struct FavoritesPage {
     } catch (error) {
       console.error('更新收藏失败:', error);
 
-      // ✅ 失败时恢复：重新添加到列表
+      // 失败时恢复：重新添加到列表
       this.recipes = [...this.recipes, currentRecipe];
+    }
+  }
+
+  // ✅ 清空收藏夹
+  private async clearAllFavorites() {
+    if (this.recipes.length === 0) {
+      promptAction.showToast({
+        message: '收藏夹已经是空的了',
+        duration: 2000
+      });
+      return;
+    }
+
+    // 显示确认对话框
+    AlertDialog.show({
+      title: '清空收藏夹',
+      message: `确定要清空所有 ${this.recipes.length} 个收藏吗？此操作不可恢复。`,
+      primaryButton: {
+        value: '取消',
+        action: () => {
+          console.log('取消清空');
+        }
+      },
+      secondaryButton: {
+        value: '确定清空',
+        fontColor: '#FF6B6B',
+        action: async () => {
+          await this.performClearAll();
+        }
+      }
+    });
+  }
+
+  // 执行清空操作
+  private async performClearAll() {
+    const backupRecipes = [...this.recipes];
+
+    try {
+      // 乐观更新：立即清空列表
+      this.recipes = [];
+
+      // 调用后端 API 批量取消收藏
+      const promises = backupRecipes.map(r => ApiService.updateFavorite(r.id));
+      await Promise.all(promises);
+
+      promptAction.showToast({
+        message: '已清空收藏夹',
+        duration: 2000
+      });
+
+    } catch (error) {
+      console.error('清空收藏失败:', error);
+
+      // 失败时恢复
+      this.recipes = backupRecipes;
+
+      promptAction.showToast({
+        message: '清空失败，请重试',
+        duration: 2000
+      });
     }
   }
 
@@ -48,7 +109,6 @@ export struct FavoritesPage {
       url: 'pages/DetailPage',
       params: recipe
     })
-    this.isLoading = false;
   }
 
   @Builder
@@ -102,7 +162,6 @@ export struct FavoritesPage {
         .layoutWeight(1)
         .onClick(() => this.navigateToDetail(r))
 
-        // ✅ 收藏页面显示取消收藏按钮
         Column() {
           Text("❤️")
             .fontSize(24)
@@ -151,7 +210,21 @@ export struct FavoritesPage {
 
         Blank()
 
-        Row().width(60)
+        // ✅ 清空按钮
+        Row() {
+          Text('🗑️')
+            .fontSize(20)
+          Text('清空')
+            .fontSize(14)
+            .fontColor('#999999')
+            .margin({ left: 4 })
+        }
+        .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+        .backgroundColor(this.recipes.length > 0 ? '#FFF0F0' : '#F5F5F5')
+        .borderRadius(16)
+        .onClick(() => {
+          this.clearAllFavorites();
+        })
       }
       .width('100%')
       .height(56)

@@ -29,40 +29,28 @@ export struct HomePage {
   };
 
   private subCategoryDisplay: Record<string, string> = {
-    // 主食
     "米类": "🍚 米类",
     "面类": "🍜 面类",
     "杂粮": "🌾 杂粮",
-
-    // 蔬菜
     "叶菜类": "🥬 叶菜类",
     "根茎类": "🥕 根茎类",
     "茄瓜类": "🍆 茄瓜类",
     "葱姜蒜类": "🧄 葱姜蒜类",
     "豆类蔬菜": "🫘 豆类蔬菜",
     "菌菇类": "🍄 菌菇类",
-
-    // 肉类
     "猪肉": "🐖 猪肉",
     "牛肉": "🐄 牛肉",
     "羊肉": "🐏 羊肉",
     "鸡肉": "🐔 鸡肉",
     "鸭肉": "🦆 鸭肉",
-
-    // 水产
     "鱼类": "🐟 鱼类",
     "虾蟹贝": "🦐 虾蟹贝",
     "其他": "🌊 其他",
-
-    // 蛋奶
     "蛋类": "🥚 蛋类",
     "乳类": "🥛 乳类",
-
-    // 豆制品
     "豆类": "🌰 豆类",
     "制品": "🧈 制品"
   };
-
 
   private tasteDisplay: Record<string, string> = {
     "清淡": "🥗 清淡",
@@ -74,7 +62,6 @@ export struct HomePage {
     "麻辣": "🫑🌶️ 麻辣",
     "鲜香": "🍲 鲜香"
   };
-
 
   private styleDisplay: Record<string, string> = {
     "家常菜": "🏡 家常菜",
@@ -89,7 +76,6 @@ export struct HomePage {
     "日式料理": "🍱 日式料理",
     "韩式料理": "🍲 韩式料理"
   };
-
 
   async aboutToAppear() {
     const rawMap: IngredientsMap = await ApiService.getIngredients();
@@ -248,13 +234,34 @@ export struct HomePage {
             .width('100%')
           })
 
-          // 显示已选食材
+          // ✅ 显示已选食材（带清空按钮）
           if (this.selectedIngredients.length > 0) {
-            Text('🧺 已选食材')
-              .fontSize(18)
-              .fontWeight(FontWeight.Bold)
-              .fontColor('#333333')
-              .margin({ top: 16, bottom: 8 })
+            Row() {
+              Text('🧺 已选食材')
+                .fontSize(18)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#333333')
+
+              Blank()
+
+              // ✅ 一键清空按钮
+              Row() {
+                Text('🗑️')
+                  .fontSize(16)
+                Text('清空')
+                  .fontSize(13)
+                  .fontColor('#999999')
+                  .margin({ left: 4 })
+              }
+              .padding({ left: 10, right: 10, top: 6, bottom: 6 })
+              .backgroundColor('#FFF0F0')
+              .borderRadius(12)
+              .onClick(() => {
+                this.selectedIngredients = [];
+              })
+            }
+            .width('100%')
+            .margin({ top: 16, bottom: 8 })
 
             Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
               ForEach(this.selectedIngredients, (item: string) => {
@@ -269,8 +276,7 @@ export struct HomePage {
             }
           }
 
-
-          // 口味选择（已改为 Flex）
+          // 口味选择
           Text('🌶️ 选择口味')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)
@@ -295,7 +301,7 @@ export struct HomePage {
           }
           .width('100%')
 
-          // 菜系选择（已改为 Flex）
+          // 菜系选择
           Text('🥘 选择菜系')
             .fontSize(20)
             .fontWeight(FontWeight.Bold)

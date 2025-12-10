@@ -5,5 +5,5 @@ export interface RecommendRequest {
 }
 
 export interface DefaultRequest {
-  recipe_id: number;
+  request: string;
 }

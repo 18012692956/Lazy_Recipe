@@ -109,4 +109,12 @@ public class ApiController {
     public List<Recipe> getHistory() {
         return dataService.getHistory();
     }
+
+    /**
+     * ✅ 清空浏览历史
+     */
+    @PostMapping("/history/clear")
+    public void clearHistory() {
+        dataService.clearHistory();
+    }
 }
