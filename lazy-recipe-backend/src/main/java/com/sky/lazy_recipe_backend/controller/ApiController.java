@@ -66,7 +66,16 @@ public class ApiController {
     }
 
     /**
-     * 推荐菜谱（伪AI版本）
+     * 获取最新菜谱
+     * GET /api/recipes/latest
+     */
+    @GetMapping("/recipes/latest")
+    public List<Recipe> getLatestRecipes() {
+        return dataService.getLatestRecipes();
+    }
+
+    /**
+     * 推荐菜谱（AI版本）
      * POST /api/recommend
      */
     @PostMapping("/recommend")

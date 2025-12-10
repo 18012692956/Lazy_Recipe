@@ -118,12 +118,15 @@ public class DataService {
         recipeRepository.save(recipe);
     }
 
+    public List<Recipe> getLatestRecipes() {
+        return recipeRepository.findTop3ByOrderByIdDesc();
+    }
+
     public List<Recipe> getFavorites() {
         return recipeRepository.findAll().stream()
                 .filter(Recipe::isFavorite)
                 .toList();
     }
-
 
     public void updateFavorite(int recipeId) {
         Optional<Recipe> optional = recipeRepository.findById(recipeId);

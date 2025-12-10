@@ -1,5 +1,6 @@
 {
   "src": [
+    "pages/PreviewPage",
     "pages/HomePage",
     "pages/RecommendPage",
     "pages/DetailPage",

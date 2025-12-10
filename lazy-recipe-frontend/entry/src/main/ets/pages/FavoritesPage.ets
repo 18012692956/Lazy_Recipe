@@ -192,13 +192,16 @@ export struct FavoritesPage {
       Row() {
         Row() {
           Text('←')
-            .fontSize(24)
+            .fontSize(20)
             .fontColor('#666666')
           Text('返回')
-            .fontSize(16)
+            .fontSize(14)
             .fontColor('#666666')
             .margin({ left: 4 })
         }
+        .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+        .backgroundColor(this.recipes.length > 0 ? '#FFF0F0' : '#F5F5F5')
+        .borderRadius(16)
         .onClick(() => router.back())
 
         Blank()

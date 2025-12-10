@@ -14,6 +14,10 @@ export class ApiService {
     return await HttpClient.get<Preferences>("/preferences");
   }
 
+  static async getLatestRecipes(): Promise<Recipe[]> {
+    return await HttpClient.get<Recipe[]>("/recipes/latest")
+  }
+
   static async getFavorites(): Promise<Recipe[]> {
     return await HttpClient.get<Recipe[]>("/favorites");
   }

@@ -16,6 +16,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
      */
     List<Recipe> findByLastViewedAtAfterOrderByLastViewedAtDesc(LocalDateTime time);
 
+    List<Recipe> findTop3ByOrderByIdDesc();
+
     /**
      * ✅ 或者使用自定义查询，限制返回数量
      */
