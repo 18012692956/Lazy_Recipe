@@ -29,6 +29,19 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
     @Modifying
     @Query("UPDATE Recipe r SET r.lastViewedAt = NULL")
     void clearAllViewHistory();
+
+    @Query("""
+       SELECT r FROM Recipe r
+       WHERE (r.lastViewedAt IS NULL OR r.lastViewedAt < :expireTime)
+       AND r.favorite = false
+       """)
+    List<Recipe> findUnusedAndUnfavorited(LocalDateTime expireTime);
+
+    @Query("""
+       SELECT r FROM Recipe r WHERE r.favorite = true
+       """)
+    List<Recipe> findByFavoriteTrue();
+
     // 你可以在这里添加自定义查询方法，例如：
     // List<Recipe> findByTaste(String taste);
     // List<Recipe> findByStyle(String style);

@@ -38,9 +38,11 @@ public class RecommendService {
 
         // 不足 → 补充 AI 菜谱（先查重）
         List<Recipe> aiGenerated = aiService.generateRecipes(
+                null,
                 req.getIngredients(),
                 req.getTaste(),
-                req.getStyle()
+                req.getStyle(),
+                false
         );
 
         List<Recipe> existing = dataService.getRecipes();

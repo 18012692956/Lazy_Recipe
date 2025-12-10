@@ -1,7 +1,8 @@
 import http from '@ohos.net.http';
 
+
 export class HttpClient {
-  static baseUrl: string = "http://192.168.19.66:8080/api";
+  static baseUrl: string = "http://10.0.2.2:8080/api"; // 本机ip
 
   static async get<T>(path: string): Promise<T> {
     console.log('HttpClient GET:', `${HttpClient.baseUrl}${path}`);

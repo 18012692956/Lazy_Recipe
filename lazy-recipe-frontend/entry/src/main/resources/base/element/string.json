@@ -11,6 +11,14 @@
     {
       "name": "EntryAbility_label",
       "value": "label"
+    },
+    {
+      "name": "get_wifi_ip",
+      "value": "Needed to obtain Wi-Fi IP"
+    },
+    {
+      "name": "location_for_wifi",
+      "value": "Needed to access Wi-Fi related location"
     }
   ]
 }

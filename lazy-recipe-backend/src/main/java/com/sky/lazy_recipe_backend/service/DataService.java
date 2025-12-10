@@ -5,17 +5,24 @@ import com.sky.lazy_recipe_backend.model.IngredientCategory;
 import com.sky.lazy_recipe_backend.model.Recipe;
 import com.sky.lazy_recipe_backend.repository.RecipeRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class DataService {
 
     @Autowired
     private RecipeRepository recipeRepository;
+    private final SimilarityService similarityService;
+    private final AIService aiService;
 
     // ---------- 多级食材结构（仍内存） ----------
     private static final Map<Category, List<IngredientCategory>> INGREDIENTS = new LinkedHashMap<>();
@@ -154,6 +161,97 @@ public class DataService {
     @Transactional
     public void clearHistory() {
         recipeRepository.clearAllViewHistory();
+    }
+
+    /**
+     * 删除未浏览且未收藏的菜谱（例如 1 天没浏览）
+     */
+    @Transactional
+    public void cleanOldRecipes(int days) {
+        LocalDateTime expireTime = LocalDateTime.now().minusDays(days);
+
+        List<Recipe> recipes = recipeRepository.findUnusedAndUnfavorited(expireTime);
+
+        if (recipes.isEmpty()) {
+            log.info("没有需要清理的菜谱");
+            return;
+        }
+
+        log.info("准备删除 {} 条菜谱（未浏览且未收藏）", recipes.size());
+
+        recipeRepository.deleteAll(recipes);  // 触发 JPA 自动级联删除
+
+        log.info("清理完成，共删除 {} 条菜谱", recipes.size());
+    }
+
+    /**
+     * 选出最近浏览 + 收藏夹组合排序后的前 5 道菜
+     */
+    public List<Recipe> getTopRepresentativeRecipes() {
+        List<Recipe> favorites = recipeRepository.findByFavoriteTrue();
+        List<Recipe> recentViewed = recipeRepository.findRecentlyViewed();
+
+        // 合并，并去重
+        Set<Recipe> merged = new HashSet<>();
+        merged.addAll(favorites);
+        merged.addAll(recentViewed);
+
+        // 按权重排序：收藏优先，其次按最近浏览时间排序
+        return merged.stream()
+                .sorted((a, b) -> {
+                    // 1. 是否收藏
+                    if (a.isFavorite() != b.isFavorite()) {
+                        return a.isFavorite() ? -1 : 1; // 收藏排前
+                    }
+
+                    // 2. 最近浏览
+                    LocalDateTime t1 = a.getLastViewedAt();
+                    LocalDateTime t2 = b.getLastViewedAt();
+                    if (t1 == null && t2 == null) return 0;
+                    if (t1 == null) return 1;
+                    if (t2 == null) return -1;
+                    return t2.compareTo(t1); // 最近时间排前
+                })
+                .limit(5)
+                .toList();
+    }
+
+    @Transactional
+    public void updateDailyRecipes() {
+        log.info("开始执行每日 AI 推荐菜谱任务...");
+
+        // 1. 获取前 5 道代表菜
+        List<Recipe> topRecipes = getTopRepresentativeRecipes();
+        if (topRecipes.isEmpty()) {
+            log.warn("无代表菜谱，跳过推荐任务");
+            return;
+        }
+
+        // 2. 提取风味 + 风格 + 高频食材 + 菜名
+        Map<String, Object> features = similarityService.extractRecipeFeatures(topRecipes);
+        String taste = (String) features.get("taste");
+        String style = (String) features.get("style");
+        List<String> ingredients = (List<String>) features.get("ingredients");
+        List<String> titles = (List<String>) features.get("titles");
+
+        log.info("代表口味: {}", taste);
+        log.info("代表风格: {}", style);
+        log.info("代表食材（高频）: {}", ingredients);
+        log.info("已存在菜名: {}", titles);
+
+        // 3. AI 生成
+        List<Recipe> aiGenerated = aiService.generateRecipes(titles, ingredients, taste, style,  true);
+
+        // 4. 去重过滤
+        List<Recipe> existing = this.getRecipes();
+
+        List<Recipe> filteredAI = aiGenerated.stream()
+                .filter(r -> !similarityService.isDuplicate(r, existing))
+                .collect(Collectors.toList());
+
+        // 5. 保存
+        recipeRepository.saveAll(filteredAI);
+        log.info("AI 自动推荐写入完成，共新增 {} 条", filteredAI.size());
     }
 
 }

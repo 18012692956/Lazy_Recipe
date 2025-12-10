@@ -73,4 +73,69 @@ public class SimilarityService {
         }
         return freq;
     }
+
+    /**
+     * 从代表菜中提取：
+     * 1. 最常见口味（1 个）
+     * 2. 最常见风格（1 个）
+     * 3. 高频食材（5 个以内）
+     * 4. 菜名列表（用于避免 AI 重复）
+     */
+    public Map<String, Object> extractRecipeFeatures(List<Recipe> recipes) {
+
+        Map<String, Integer> tasteCount = new HashMap<>();
+        Map<String, Integer> styleCount = new HashMap<>();
+        Map<String, Integer> ingredientCount = new HashMap<>();
+        List<String> titles = new ArrayList<>();
+
+        for (Recipe r : recipes) {
+
+            // 1. 统计 taste
+            if (r.getTaste() != null) {
+                tasteCount.put(r.getTaste(), tasteCount.getOrDefault(r.getTaste(), 0) + 1);
+            }
+
+            // 2. 统计 style
+            if (r.getStyle() != null) {
+                styleCount.put(r.getStyle(), styleCount.getOrDefault(r.getStyle(), 0) + 1);
+            }
+
+            // 3. 汇总 ingredients
+            if (r.getIngredients() != null) {
+                for (String ingredient : r.getIngredients()) {
+                    ingredientCount.put(
+                            ingredient,
+                            ingredientCount.getOrDefault(ingredient, 0) + 1
+                    );
+                }
+            }
+
+            titles.add(r.getTitle());
+        }
+
+        // 选出最常见 taste & style
+        String topTaste = tasteCount.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        String topStyle = styleCount.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        // 选出频率最高的前 5 个 ingredients
+        List<String> topIngredients = ingredientCount.entrySet().stream()
+                .sorted((a, b) -> b.getValue() - a.getValue())
+                .limit(5)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("taste", topTaste);
+        result.put("style", topStyle);
+        result.put("ingredients", topIngredients);
+        result.put("titles", titles);
+        return result;
+    }
 }

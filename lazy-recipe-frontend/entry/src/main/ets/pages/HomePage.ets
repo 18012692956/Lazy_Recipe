@@ -265,13 +265,16 @@ export struct HomePage {
 
             Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
               ForEach(this.selectedIngredients, (item: string) => {
-                Text(item)
+                Text(item + ' ×')
                   .fontSize(15)
                   .fontColor('#555555')
                   .padding({ left: 12, right: 12, top: 6, bottom: 6 })
                   .backgroundColor('#EFEFEF')
                   .borderRadius(16)
                   .margin({ right: 8, bottom: 8 })
+                  .onClick(() => {
+                    this.selectedIngredients = this.selectedIngredients.filter(newItem => newItem != item)
+                  })
               })
             }
           }

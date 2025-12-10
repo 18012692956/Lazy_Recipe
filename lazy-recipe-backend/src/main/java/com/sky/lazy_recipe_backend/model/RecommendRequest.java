@@ -14,6 +14,4 @@ public class RecommendRequest {
 
     private String taste;     // 用户选择的口味
     private String style;     // 用户选择的菜系风格
-
-    // TODO Iteration 2: 支持用户偏好记录（如“低脂”“高蛋白”）
 }

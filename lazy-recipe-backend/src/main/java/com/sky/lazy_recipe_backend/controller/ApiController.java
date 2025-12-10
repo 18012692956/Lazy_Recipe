@@ -20,8 +20,6 @@ import java.util.*;
  *  - 根据用户选择食材推荐菜谱（伪AI版本）
  *  - 收藏菜谱 & 查看收藏
  *
- * TODO Iteration 3:
- *  - 将推荐逻辑替换为 AI 大模型服务（DeepSeek / Moonshot / GLM 等）
  */
 @RestController
 @RequestMapping("/api")
