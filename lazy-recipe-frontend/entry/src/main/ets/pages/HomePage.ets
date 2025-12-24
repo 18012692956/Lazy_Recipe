@@ -2,6 +2,7 @@ import { ApiService } from '../common/ApiService';
 import { Preferences } from '../model/Preferences';
 import { IngredientsMap, IngredientCategory, SubIngredientCategory } from '../model/IngredientsMap';
 import router from '@ohos.router';
+import promptAction from '@ohos.promptAction';
 
 @Entry
 @Component
@@ -104,19 +105,80 @@ export struct HomePage {
     this.expandedSubcategories = newSet;
   }
 
+  handleRecommend() {
+    // 检查是否选择了食材
+    if (this.selectedIngredients.length === 0) {
+      promptAction.showToast({
+        message: '请至少选择一种食材 🥬',
+        duration: 2000,
+        bottom: 200
+      });
+      return;
+    }
+
+    // 跳转到推荐页面
+    router.pushUrl({
+      url: 'pages/RecommendPage',
+      params: {
+        ingredients: this.selectedIngredients,
+        taste: this.selectedTaste,
+        style: this.selectedStyle
+      }
+    });
+  }
+
   build() {
     Column() {
       // 顶部标题栏
       Row() {
         Column() {
-          Text('懒人食谱助手')
-            .fontSize(36)
-            .fontWeight(FontWeight.Bold)
-            .fontColor('#333333')
-          Text('发现美食，享受生活')
-            .fontSize(14)
-            .fontColor('#999999')
-            .margin({ top: 4 })
+          Row() {
+            Text('懒')
+              .fontSize(38)
+              .fontWeight(900)
+              .fontColor('#3E2723')
+              .fontFamily('HarmonyOS Sans SC')
+            Text('人')
+              .fontSize(38)
+              .fontWeight(900)
+              .fontColor('#5D3028')
+              .fontFamily('HarmonyOS Sans SC')
+            Text('食')
+              .fontSize(38)
+              .fontWeight(900)
+              .fontColor('#7D3C2E')
+              .fontFamily('HarmonyOS Sans SC')
+            Text('谱')
+              .fontSize(38)
+              .fontWeight(900)
+              .fontColor('#7D3C2E')
+              .fontFamily('HarmonyOS Sans SC')
+            Text('助')
+              .fontSize(38)
+              .fontWeight(900)
+              .fontColor('#5D3028')
+              .fontFamily('HarmonyOS Sans SC')
+            Text('手')
+              .fontSize(38)
+              .fontWeight(900)
+              .fontColor('#3E2723')
+              .fontFamily('HarmonyOS Sans SC')
+          }
+
+          Row() {
+            Text('发现美食')
+              .fontSize(13)
+              .fontColor('#999999')
+              .fontWeight(FontWeight.Medium)
+            Text(' · ')
+              .fontSize(13)
+              .fontColor('#ffb0b3b5')
+            Text('享受生活')
+              .fontSize(13)
+              .fontColor('#999999')
+              .fontWeight(FontWeight.Medium)
+          }
+          .margin({ top: 6 })
         }
         .alignItems(HorizontalAlign.Start)
       }
@@ -339,14 +401,7 @@ export struct HomePage {
             .borderRadius(25)
             .margin({ top: 32, bottom: 32 })
             .onClick(() => {
-              router.pushUrl({
-                url: 'pages/RecommendPage',
-                params: {
-                  ingredients: this.selectedIngredients,
-                  taste: this.selectedTaste,
-                  style: this.selectedStyle
-                }
-              });
+              this.handleRecommend();
             })
         }
         .width('100%')
