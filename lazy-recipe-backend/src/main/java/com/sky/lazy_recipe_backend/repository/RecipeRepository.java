@@ -44,7 +44,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
        """)
     List<Recipe> findByFavoriteTrue();
 
-    // 你可以在这里添加自定义查询方法，例如：
-    // List<Recipe> findByTaste(String taste);
-    // List<Recipe> findByStyle(String style);
+    // 收藏优先，按最近浏览时间倒序，其次按 id 倒序
+    List<Recipe> findByFavoriteTrueOrderByLastViewedAtDescIdDesc();
 }

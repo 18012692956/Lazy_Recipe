@@ -16,7 +16,16 @@ public class RecipeCleanupScheduler {
     /**
      * 每天凌晨 00:00 点执行
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    public void scheduledClean() {
+//        log.info("定时任务启动：清理菜谱");
+//        dataService.cleanOldRecipes(1); // 1 天未浏览 + 未收藏 → 删除
+//    }
+
+    /**
+     * 测试每分钟清理
+     */
+    @Scheduled(cron = "0 * * * * ?")
     public void scheduledClean() {
         log.info("定时任务启动：清理菜谱");
         dataService.cleanOldRecipes(1); // 1 天未浏览 + 未收藏 → 删除

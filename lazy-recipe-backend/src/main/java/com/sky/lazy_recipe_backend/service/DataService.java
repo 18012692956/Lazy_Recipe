@@ -123,9 +123,7 @@ public class DataService {
     }
 
     public List<Recipe> getFavorites() {
-        return recipeRepository.findAll().stream()
-                .filter(Recipe::isFavorite)
-                .toList();
+        return recipeRepository.findByFavoriteTrueOrderByLastViewedAtDescIdDesc();
     }
 
     public void updateFavorite(int recipeId) {

@@ -20,4 +20,12 @@ public class RecipeUpdateScheduler {
     public void scheduleUpdate() {
         dataService.updateDailyRecipes();
     }
+
+//    /**
+//     * 测试每分钟更新
+//     */
+//    @Scheduled(cron = "0 * * * * ?")
+//    public void scheduleUpdate() {
+//        dataService.updateDailyRecipes();
+//    }
 }
